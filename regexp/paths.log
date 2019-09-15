@@ -3,6 +3,7 @@ grub> insmod regexp
 grub> function pathname { regexp --set 1:"$2" '(/.*)$' "$1"; }
 grub> function devname  { regexp --set 1:"$2" '^(\(.*\)).*$' "$1"; }
 grub> function devname2 { regexp --set 1:"$2" '^(\([a-z0-9,]+\))' "$1"; }
+grub> function basename { regexp --set 1:"$2" '([^/\\]+)$' "$1"; }
 grub> function test_input_one_func {
 >   func="$1"
 >   output=
@@ -16,15 +17,18 @@ grub> function test_input {
 >   test_input_one_func pathname
 >   test_input_one_func devname
 >   test_input_one_func devname2
+>   test_input_one_func basename
 >   echo
 > }
 grub> test_input '(hd0,msdos1)/boot/grub/sgd/something.cfg'
   pathname:    0, '/boot/grub/sgd/something.cfg'
   devname:     0, '(hd0,msdos1)'
   devname2:    0, '(hd0,msdos1)'
+  basename:    0, 'something.cfg'
 
 grub> test_input '(())/'
   pathname:    0, '/'
   devname:     0, '(())'
   devname2:    0, ''
+  basename:    0, ''
 

@@ -4,6 +4,7 @@ insmod regexp
 function pathname { regexp --set 1:"$2" '(/.*)$' "$1"; }
 function devname  { regexp --set 1:"$2" '^(\(.*\)).*$' "$1"; }
 function devname2 { regexp --set 1:"$2" '^(\([a-z0-9,]+\))' "$1"; }
+function basename { regexp --set 1:"$2" '([^/\\]+)$' "$1"; }
 
 function test_input_one_func {
   func="$1"
@@ -19,6 +20,7 @@ function test_input {
   test_input_one_func pathname
   test_input_one_func devname
   test_input_one_func devname2
+  test_input_one_func basename
   echo
 }
 

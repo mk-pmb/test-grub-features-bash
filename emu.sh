@@ -10,7 +10,7 @@ function grub_emu_run_files () {
   LOGFN="${LOGFN%.txt}"
   LOGFN="$LOGFN.log"
 
-  ( LANG=C sed -rf <(echo '
+  ( LANG=C sed -nurf <(echo '
       /^# -\*- /{n;b skip_blanks}
       b mostly_copy
 
@@ -21,13 +21,14 @@ function grub_emu_run_files () {
 
       : mostly_copy
       s~^\xEF\xBB\xBF~~
+      p
     ') -- "$@"
     echo exit
   ) | DISPLAY= grub-emu --directory="$SELFPATH" |& LANG=C sed -urf <(echo '
     s~\x1B\[[0-9;]*[A-Za-z]~~g
     s~^\r~~
     s~^(grub> ) +~\1~
-    ') | sed -nrf <(echo '
+    ') | sed -nurf <(echo '
     1{
       : skip_intro
       /\n\n$/!{N;b skip_intro}

@@ -1,4 +1,3 @@
-grub> # -*- coding: utf-8, tab-width: 2 -*-
 grub> insmod regexp
 grub> function basename { regexp --set 1:"$2" '([^/\\]+)$' "$1"; }
 grub> function devname  { regexp --set 1:"$2" '^(\(.*\)).*$' "$1"; }

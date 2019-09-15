@@ -1,0 +1,27 @@
+# -*- coding: utf-8, tab-width: 2 -*-
+insmod regexp
+
+function pathname { regexp --set 1:"$2" '(/.*)$' "$1"; }
+function devname  { regexp --set 1:"$2" '^(\(.*\)).*$' "$1"; }
+function devname2 { regexp --set 1:"$2" '^(\([a-z0-9,]+\))' "$1"; }
+
+function test_input_one_func {
+  func="$1"
+  output=
+  "$func" "$input" output
+  regexp --set 1:func_pad '^(.{12})' "$func:                               "
+  echo "  $func_pad $?, '$output'"
+}
+
+function test_input {
+  input="$1"
+  # echo "input:    '$input'"
+  test_input_one_func pathname
+  test_input_one_func devname
+  test_input_one_func devname2
+  echo
+}
+
+
+test_input '(hd0,msdos1)/boot/grub/sgd/something.cfg'
+test_input '(())/'

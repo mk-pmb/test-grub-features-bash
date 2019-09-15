@@ -3,15 +3,17 @@ grub> insmod regexp
 grub> function basename { regexp --set 1:"$2" '([^/\\]+)$' "$1"; }
 grub> function devname  { regexp --set 1:"$2" '^(\(.*\)).*$' "$1"; }
 grub> function devname2 { regexp --set 1:"$2" '^(\([a-z0-9,]+\))' "$1"; }
-grub> function filenameext { regexp --set 1:"$2" '\.([a-z0-9]{1,6})$' "$1"; }
+grub> function filenameext { regexp --set 1:"$2" '\.([A-Za-z0-9]{1,6})$' "$1"; 
+}
+
 grub> function last3 { regexp --set 1:"$2" '(.{3})$' "$1"; }
 grub> function pathname { regexp --set 1:"$2" '(/.*)$' "$1"; }
 grub> function test_input_one_func {
 >   func="$1"
 >   output=
 >   "$func" "$input" output
->   regexp --set 1:func_pad '^(.{12})' "$func:                               "
->   echo "  $func_pad '$output'"
+>   regexp --set 1:padded '^(.{12})' "$func:                           "
+>   echo "  $padded '$output'"
 > }
 grub> function test_input {
 >   input="$1"
@@ -46,6 +48,14 @@ grub> test_input '()/pack.tar.gz'
   filenameext: 'gz'
   last3:       '.gz'
   pathname:    '/pack.tar.gz'
+
+grub> test_input '(hd1,gpt2)/EFI/BOOT/BOOTx86.EFI'
+  basename:    'BOOTx86.EFI'
+  devname:     '(hd1,gpt2)'
+  devname2:    '(hd1,gpt2)'
+  filenameext: 'EFI'
+  last3:       'EFI'
+  pathname:    '/EFI/BOOT/BOOTx86.EFI'
 
 grub> test_input '(memdisk)/casper/vmlinuz'
   basename:    'vmlinuz'

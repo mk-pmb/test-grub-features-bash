@@ -37,6 +37,7 @@ function grub_emu_run_files () {
     /^grub> exit$/q
     p
     ') | tee -- "$LOGFN"
+    git add -- "$LOGFN"
 }
 
 grub_emu_run_files "$@"; exit $?

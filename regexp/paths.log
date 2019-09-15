@@ -1,34 +1,57 @@
 grub> # -*- coding: utf-8, tab-width: 2 -*-
 grub> insmod regexp
-grub> function pathname { regexp --set 1:"$2" '(/.*)$' "$1"; }
+grub> function basename { regexp --set 1:"$2" '([^/\\]+)$' "$1"; }
 grub> function devname  { regexp --set 1:"$2" '^(\(.*\)).*$' "$1"; }
 grub> function devname2 { regexp --set 1:"$2" '^(\([a-z0-9,]+\))' "$1"; }
-grub> function basename { regexp --set 1:"$2" '([^/\\]+)$' "$1"; }
+grub> function filenameext { regexp --set 1:"$2" '\.([a-z0-9]{1,6})$' "$1"; }
+grub> function last3 { regexp --set 1:"$2" '(.{3})$' "$1"; }
+grub> function pathname { regexp --set 1:"$2" '(/.*)$' "$1"; }
 grub> function test_input_one_func {
 >   func="$1"
 >   output=
 >   "$func" "$input" output
 >   regexp --set 1:func_pad '^(.{12})' "$func:                               "
->   echo "  $func_pad $?, '$output'"
+>   echo "  $func_pad '$output'"
 > }
 grub> function test_input {
 >   input="$1"
->   # echo "input:    '$input'"
->   test_input_one_func pathname
+>   test_input_one_func basename
 >   test_input_one_func devname
 >   test_input_one_func devname2
->   test_input_one_func basename
+>   test_input_one_func filenameext
+>   test_input_one_func last3
+>   test_input_one_func pathname
 >   echo
 > }
 grub> test_input '(hd0,msdos1)/boot/grub/sgd/something.cfg'
-  pathname:    0, '/boot/grub/sgd/something.cfg'
-  devname:     0, '(hd0,msdos1)'
-  devname2:    0, '(hd0,msdos1)'
-  basename:    0, 'something.cfg'
+  basename:    'something.cfg'
+  devname:     '(hd0,msdos1)'
+  devname2:    '(hd0,msdos1)'
+  filenameext: 'cfg'
+  last3:       'cfg'
+  pathname:    '/boot/grub/sgd/something.cfg'
 
-grub> test_input '(())/'
-  pathname:    0, '/'
-  devname:     0, '(())'
-  devname2:    0, ''
-  basename:    0, ''
+grub> test_input '(())/hello.jpeg'
+  basename:    'hello.jpeg'
+  devname:     '(())'
+  devname2:    ''
+  filenameext: 'jpeg'
+  last3:       'peg'
+  pathname:    '/hello.jpeg'
+
+grub> test_input '()/pack.tar.gz'
+  basename:    'pack.tar.gz'
+  devname:     '()'
+  devname2:    ''
+  filenameext: 'gz'
+  last3:       '.gz'
+  pathname:    '/pack.tar.gz'
+
+grub> test_input '(memdisk)/casper/vmlinuz'
+  basename:    'vmlinuz'
+  devname:     '(memdisk)'
+  devname2:    '(memdisk)'
+  filenameext: ''
+  last3:       'nuz'
+  pathname:    '/casper/vmlinuz'
 
